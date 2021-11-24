@@ -28,12 +28,12 @@ defmodule Adelaide.Plugs.RateLimit do
   TODO: Allow deny handler configuration.
   """
   def deny_handler(conn) do
-    calm = false
+    calm = String.length(System.get_env("ADELAIDE_CALM", "")) > 0
     status = if calm, do: 420, else: 429
     conn
     |> put_resp_header("content-type", "application/json")
     |> send_resp(status, Poison.encode!(%{
-        message: "You are being rate limited.",
+        message: "You are being rate limited." <> (if calm, do: " Don't worry about it dogg.", else: ""),
         code: 0
     }))
     |> halt
